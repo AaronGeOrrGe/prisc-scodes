@@ -8,7 +8,7 @@ import { useFonts } from 'expo-font';
 import COLORS from '../../constants/Colors';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming, Easing, withDelay } from 'react-native-reanimated';
 
-const API_URL = 'http://10.222.231.165:8081/api/auth/login';
+const API_URL = 'http://localhost:8081/api/auth/login';
 
 export default function LoginScreen() {
   const [fontsLoaded] = useFonts({
@@ -59,15 +59,37 @@ export default function LoginScreen() {
       return;
     }
     setLoading(true);
-    try {
-      // Simulate a successful login
-      setTimeout(() => {
-        router.replace('/(drawer)/(tabs)/mirror');
-      }, 1000);
-    } catch (error: any) {
-      setError('Invalid email or password.');
+    // --- MOCK LOGIN LOGIC: Remove this block and uncomment the fetch below to reconnect to backend ---
+    setTimeout(() => {
       setLoading(false);
+      // Simulate success: redirect to main app
+      router.replace('/(drawer)/(tabs)/mirror');
+      // To simulate an error, uncomment below:
+      // setError('Invalid email or password.');
+    }, 1000);
+    /*
+    // --- BACKEND LOGIN LOGIC (commented out) ---
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      if (res.ok) {
+        router.replace('/(drawer)/(tabs)/mirror');
+      } else {
+        const data = await res.json().catch(() => ({}));
+        if (data.message && data.message.toLowerCase().includes('verify')) {
+          setError('Please verify your email before logging in.');
+        } else {
+          setError(data.message || 'Invalid email or password.');
+        }
+      }
+    } catch (error) {
+      setError('Network error. Please check your connection.');
     }
+    setLoading(false);
+    */
   };
 
   return (
@@ -87,45 +109,45 @@ export default function LoginScreen() {
                 {error ? <Text style={styles.errorText}>{error}</Text> : null}
                 <View style={styles.inputContainer}>
                   <Ionicons name="mail-outline" color="#888" size={18} style={{ marginRight: 10 }} />
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Email"
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
                     placeholderTextColor="#aaa"
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    value={email}
-                    onChangeText={setEmail}
-                  />
+              autoCapitalize="none"
+              keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
+            />
                 </View>
                 <View style={styles.inputContainer}>
                   <Ionicons name="lock-closed-outline" color="#888" size={18} style={{ marginRight: 10 }} />
-                  <TextInput
+            <TextInput
                     style={styles.input}
-                    placeholder="Password"
+              placeholder="Password"
                     placeholderTextColor="#aaa"
-                    secureTextEntry={!showPassword}
-                    value={password}
-                    onChangeText={setPassword}
-                    autoCapitalize="none"
-                  />
+              secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={setPassword}
+              autoCapitalize="none"
+            />
                   <TouchableOpacity onPress={() => setShowPassword((prev) => !prev)} style={{ padding: 8 }}>
                     <Ionicons name={showPassword ? 'eye-outline' : 'eye-off-outline'} size={18} color="#888" />
                   </TouchableOpacity>
                 </View>
                 <TouchableOpacity style={styles.forgotPasswordLink} onPress={() => alert('Password recovery coming soon!')}>
                   <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-                </TouchableOpacity>
+            </TouchableOpacity>
                 {/* Gradient Button */}
-                <TouchableOpacity
+            <TouchableOpacity
                   style={{ marginTop: 10, marginBottom: 10 }}
                   activeOpacity={0.85}
-                  onPress={handleLogin}
-                  disabled={loading}
-                >
+              onPress={handleLogin}
+              disabled={loading}
+            >
                   <LinearGradient colors={["#A07BB7", "#6C47A6"]} style={styles.loginButton} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
                     <Text style={styles.buttonText}>{loading ? 'Logging in...' : 'Log In'}</Text>
                   </LinearGradient>
-                </TouchableOpacity>
+            </TouchableOpacity>
                 {/* Divider */}
                 <View style={styles.dividerRow}>
                   <View style={styles.divider} />
@@ -136,16 +158,16 @@ export default function LoginScreen() {
                 <TouchableOpacity style={styles.socialButton} disabled>
                   <Ionicons name="logo-google" size={20} color="#EA4335" />
                   <Text style={styles.socialButtonText}>Continue with Google</Text>
-                </TouchableOpacity>
+          </TouchableOpacity>
                 {/* Switch to signup */}
-                <TouchableOpacity onPress={() => router.push('/signup')}>
-                  <Text style={styles.switchText}>
+          <TouchableOpacity onPress={() => router.push('/signup')}>
+            <Text style={styles.switchText}>
                     Don't have an account? <Text style={styles.link}>Sign Up</Text>
-                  </Text>
-                </TouchableOpacity>
+            </Text>
+          </TouchableOpacity>
               </Animated.View>
-            </View>
-          </KeyboardAwareScrollView>
+        </View>
+    </KeyboardAwareScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </LinearGradient>

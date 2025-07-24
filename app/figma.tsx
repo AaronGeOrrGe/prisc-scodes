@@ -14,27 +14,31 @@ export default function Canvas({
 
     const { locationX, locationY } = event.nativeEvent;
 
+    // Step 1: Only include known properties for ShapeType.
+    // Step 2: Use a nested position object if required by ShapeType.
     addShape({
       type: selectedShape,
-      x: locationX,
-      y: locationY,
+      position: {
+        x: locationX,
+        y: locationY,
+      },
+      id: '',
+      style: {} // Fix: Provide an empty object instead of undefined to satisfy the Style type
     });
   };
 
+  const styles = StyleSheet.create({
+    overlay: {
+      ...StyleSheet.absoluteFillObject,
+    },
+  });
+
   return (
-    <Pressable onPress={handlePress} style={styles.canvas}>
-      <View style={styles.overlay}>
-        {/* Render shapes here */}
-      </View>
-    </Pressable>
+    <View style={styles.overlay} />
   );
 }
 
 const styles = StyleSheet.create({
-  canvas: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
   overlay: {
     ...StyleSheet.absoluteFillObject,
   },

@@ -4,6 +4,7 @@ import { useCanvas } from '../../../context/CanvasContext';
 import { generateUUID } from '@/utils/generateUUID';
 import { ShapeType } from '../../../constants/type';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function ToolsScreen() {
     const { addShape: addShapeToCanvas, undo, redo, saveToHistory, addImageFromGallery } = useCanvas();
@@ -24,10 +25,10 @@ export default function ToolsScreen() {
     const deleteAll = () => saveToHistory([]);
 
     const tools = [
-        { name: 'Add Rectangle', icon: 'square-outline', action: () => addShape('rectangle') },
+        { name: 'Add Rectangle', icon: undefined, customIcon: <View style={styles.rectIcon} />, action: () => addShape('rectangle') },
         { name: 'Add Circle', icon: 'ellipse-outline', action: () => addShape('circle') },
-        { name: 'Add Oval', icon: undefined, customIcon: <Text style={{fontSize: 32, lineHeight: 32}}>◉</Text>, action: () => addShape('oval') },
-        { name: 'Add Kite', icon: undefined, customIcon: <Text style={{fontSize: 32, lineHeight: 32}}>🪁</Text>, action: () => addShape('kite') },
+        { name: 'Add Oval', icon: undefined, customIcon: <View style={styles.ovalIcon} />, action: () => addShape('oval') },
+        { name: 'Add Kite', icon: undefined, customIcon: <View style={styles.kiteIcon}><View style={styles.kiteDiamond} /><View style={styles.kiteTail} /></View>, action: () => addShape('kite') },
         { name: 'Add Text', icon: 'text', action: () => addShape('text') },
         { name: 'Insert Image', icon: 'image-outline', action: addImageFromGallery },
         { name: 'Undo', icon: 'arrow-undo-outline', action: undo },
@@ -35,10 +36,8 @@ export default function ToolsScreen() {
     ];
 
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <View style={styles.header}>
-                <Text style={styles.headerTitle}>TOOLS</Text>
-            </View>
+        <LinearGradient colors={["#A07BB7", "#F6F2F7"]} style={styles.gradient}>
+          <SafeAreaView style={styles.safeArea}>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.grid}>
                     {tools.map((tool) => (
@@ -54,15 +53,19 @@ export default function ToolsScreen() {
                     <Text style={[styles.buttonText, { color: '#c0392b' }]}>Delete All</Text>
                 </TouchableOpacity>
             </ScrollView>
-        </SafeAreaView>
+          </SafeAreaView>
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: '#f5f7fa',
-    },
+  gradient: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
     header: {
         padding: 16,
         alignItems: 'center',
@@ -111,5 +114,46 @@ const styles = StyleSheet.create({
         backgroundColor: '#fdecea',
         borderWidth: 1,
         borderColor: '#f9c5c0',
+    },
+    rectIcon: {
+      width: 38,
+      height: 24,
+      borderRadius: 6,
+      borderWidth: 2,
+      borderColor: '#34495e',
+      backgroundColor: 'transparent',
+      marginBottom: 2,
+    },
+    ovalIcon: {
+      width: 38,
+      height: 20,
+      borderRadius: 20,
+      borderWidth: 2,
+      borderColor: '#34495e',
+      backgroundColor: 'transparent',
+      marginBottom: 2,
+    },
+    kiteIcon: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: 38,
+      height: 38,
+      marginBottom: 2,
+    },
+    kiteDiamond: {
+      width: 22,
+      height: 22,
+      borderWidth: 2,
+      borderColor: '#34495e',
+      backgroundColor: 'transparent',
+      transform: [{ rotate: '45deg' }],
+      borderRadius: 4,
+    },
+    kiteTail: {
+      width: 2,
+      height: 12,
+      backgroundColor: '#34495e',
+      marginTop: -2,
+      borderRadius: 1,
     },
 });

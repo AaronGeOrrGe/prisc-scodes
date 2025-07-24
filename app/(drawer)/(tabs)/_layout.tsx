@@ -12,7 +12,6 @@ export default function TabsLayout() {
     <Tabs
       tabBar={(props) => <TabBar {...props} />} // Use the custom tab bar
       screenOptions={({ route }) => ({
-        headerTitle: '',
         headerLeft: () => null,
         headerRight: () =>
           route.name !== 'mirror' ? (
@@ -23,10 +22,58 @@ export default function TabsLayout() {
       })}
     > 
       <Tabs.Screen name="mirror" options={{ headerShown: false, title: 'Mirror' }} />
-      <Tabs.Screen name="ToolsScreen" options={{ title: 'Tools' }} />
-      <Tabs.Screen name="CanvasScreen" options={{ title: 'Canvas' }} />
-      <Tabs.Screen name="Templates" options={{ title: 'Templates' }} />
-      <Tabs.Screen name="LayerScreen" options={{ title: 'Layers' }} />
+      <Tabs.Screen
+        name="ToolsScreen"
+        options={{
+          title: 'TOOLS',
+          headerTitleAlign: 'left',
+          headerShown: true,
+          headerStyle: { backgroundColor: '#A07BB7' },
+          headerTitleStyle: {
+            color: '#fff',
+            fontWeight: 'bold',
+            fontSize: 26,
+            textTransform: 'uppercase',
+            letterSpacing: 1,
+          },
+          headerLeft: () => null,
+        }}
+      />
+      <Tabs.Screen
+        name="CanvasScreen"
+        options={{
+          title: 'CANVAS',
+          headerTitleAlign: 'left',
+          headerShown: true,
+          headerStyle: { backgroundColor: '#A07BB7' },
+          headerTitleStyle: {
+            color: '#fff',
+            fontWeight: 'bold',
+            fontSize: 26,
+            textTransform: 'uppercase',
+            letterSpacing: 1,
+          },
+          headerLeft: () => null,
+        }}
+      />
+      <Tabs.Screen name="Templates" options={{ headerShown: false }} />
+      <Tabs.Screen
+        name="LayerScreen"
+        options={{
+          title: 'LAYERS',
+          headerTitleAlign: 'left',
+          headerShown: true,
+          headerStyle: { backgroundColor: '#A07BB7' },
+          headerTitleStyle: {
+            color: '#fff',
+            fontWeight: 'bold',
+            fontSize: 26,
+            textTransform: 'uppercase',
+            letterSpacing: 1,
+          },
+          headerLeft: () => null,
+        }}
+      />
     </Tabs>
   );
 }

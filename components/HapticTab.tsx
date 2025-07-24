@@ -43,12 +43,13 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 8,
+    paddingTop: 2,
+    paddingBottom: 2,
   },
   inner: {
-    width: 44, // Smaller circle
-    height: 44,
-    borderRadius: 22, // Half of the new width/height
+    width: 32, // Smaller circle
+    height: 32,
+    borderRadius: 16, // Half of the new width/height
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'transparent',

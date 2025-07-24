@@ -6,6 +6,7 @@ import { DrawerActions } from '@react-navigation/native';
 import { useCanvas } from '../../../context/CanvasContext';
 import ViewShot from 'react-native-view-shot';
 import * as MediaLibrary from 'expo-media-library';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function MirrorScreen() {
   const { savedDesign } = useCanvas();
@@ -65,76 +66,126 @@ export default function MirrorScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* 🔼 Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
-          <Ionicons name="menu" size={28} color="#000" />
-        </TouchableOpacity>
+    <LinearGradient colors={["#A07BB7", "#F6F2F7"]} style={styles.gradient}>
+      <SafeAreaView style={styles.container}>
+        {/* Header */}
+        <View style={styles.headerWrapper}>
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
+              <Ionicons name="menu" size={28} color="#fff" />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Mirror</Text>
+            <TouchableOpacity onPress={() => router.push('/settings')}>
+              {avatarUrl ? (
+                <Image source={{ uri: avatarUrl }} style={styles.avatarImage} />
+              ) : (
+                <Ionicons name="person-circle-outline" size={32} color="#fff" />
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
 
-        <Text style={styles.headerTitle}>Mirror</Text>
+        {/* Canvas Preview Area */}
+        <View style={styles.cardShadow}>
+          <ViewShot ref={viewShotRef} options={{ format: 'png', quality: 1.0 }} style={styles.canvasCard}>
+            {savedDesign?.length === 0 ? (
+              <Text style={styles.empty}>No design saved yet.</Text>
+            ) : (
+              <View style={styles.designsScrollWrapper}>
+                {savedDesign.map(renderShape)}
+              </View>
+            )}
+          </ViewShot>
+        </View>
 
-        <TouchableOpacity onPress={() => router.push('/settings')}>
-          {avatarUrl ? (
-            <Image source={{ uri: avatarUrl }} style={styles.avatarImage} />
-          ) : (
-            <Ionicons name="person-circle-outline" size={32} color="#00C853" />
-          )}
-        </TouchableOpacity>
-      </View>
-
-      {/* 🖼 Canvas Preview Area */}
-      <ViewShot ref={viewShotRef} options={{ format: 'png', quality: 1.0 }} style={{ flex: 1, backgroundColor: '#f5f5f5', position: 'relative' }}>
-        {savedDesign?.length === 0 ? (
-          <Text style={styles.empty}>No design saved yet.</Text>
-        ) : (
-          savedDesign.map(renderShape)
-        )}
-      </ViewShot>
-
-      {/* 📷 Mirror Placeholder */}
-      <View style={styles.body}>
-        <Image
-          source={require('../../../assets/images/mirror-placeholder.png')}
-          style={styles.illustration}
-          resizeMode="contain"
-        />
-        <Text style={styles.title}>Select a frame or component</Text>
-        <Text style={styles.subtitle}>
-          Click a top-level frame or component on{"\n"}your computer to get started.
-        </Text>
-
-        <TouchableOpacity onPress={exportToPng} style={styles.exportButton}>
-          <Ionicons name="download-outline" size={24} color="#fff" />
-          <Text style={styles.exportText}>Export to PNG</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+        {/* Mirror Placeholder */}
+        <View style={styles.exportButtonWrapper}>
+          <TouchableOpacity onPress={exportToPng} style={styles.exportButton} activeOpacity={0.85}>
+            <Ionicons name="download-outline" size={24} color="#fff" />
+            <Text style={styles.exportText}>Export to PNG</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
     paddingTop: StatusBar.currentHeight || 0,
+  },
+  headerWrapper: {
+    paddingHorizontal: 0,
+    paddingTop: 0,
+    backgroundColor: 'transparent',
+    shadowColor: '#A07BB7',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    elevation: 8,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    marginBottom: 10,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    padding: 18,
+    backgroundColor: 'rgba(160,123,183,0.95)',
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#000',
+    color: '#fff',
+    letterSpacing: 1,
   },
   avatarImage: {
     width: 36,
     height: 36,
     borderRadius: 18,
     resizeMode: 'cover',
+    borderWidth: 2,
+    borderColor: '#fff',
+  },
+  cardShadow: {
+    marginHorizontal: 16,
+    marginTop: 32,
+    borderRadius: 24,
+    shadowColor: '#A07BB7',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
+    backgroundColor: 'transparent',
+    flex: 1,
+    minHeight: 320,
+    maxHeight: '60%',
+  },
+  canvasCard: {
+    backgroundColor: '#fff',
+    borderRadius: 24,
+    minHeight: 320,
+    minWidth: 280,
+    maxHeight: '100%',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    overflow: 'hidden',
+    padding: 16,
+    width: '100%',
+  },
+  designsScrollWrapper: {
+    width: '100%',
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   body: {
     alignItems: 'center',
@@ -143,22 +194,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   illustration: {
-    width: 120,
-    height: 120,
-    marginBottom: 24,
+    width: 140,
+    height: 140,
+    marginBottom: 28,
+    borderRadius: 24,
+    backgroundColor: '#fff',
+    shadowColor: '#A07BB7',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
   },
   title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000',
-    marginBottom: 6,
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#6C47A6',
+    marginBottom: 8,
     textAlign: 'center',
+    letterSpacing: 0.5,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#888',
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 22,
+    marginBottom: 10,
   },
   empty: {
     textAlign: 'center',
@@ -167,18 +227,33 @@ const styles = StyleSheet.create({
     color: '#aaa',
   },
   exportButton: {
-    marginTop: 20,
-    backgroundColor: '#00C853',
+    marginTop: 8,
+    backgroundColor: '#A07BB7',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 12,
+    paddingHorizontal: 22,
+    paddingVertical: 13,
+    borderRadius: 16,
+    shadowColor: '#A07BB7',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    elevation: 4,
   },
   exportText: {
     color: '#fff',
-    marginLeft: 8,
-    fontSize: 16,
-    fontWeight: '600',
+    marginLeft: 10,
+    fontSize: 17,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  exportButtonWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
   },
 });

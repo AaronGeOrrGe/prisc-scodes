@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Platform } from 'react-native';
 import { useCanvas } from '../../../context/CanvasContext';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const templateData = [
   {
@@ -37,53 +38,77 @@ export default function TemplateScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerWrap}>
-        <Text style={styles.headerTitle}>Templates</Text>
-        <Text style={styles.headerSubtitle}>Discover amazing design templates for your next project</Text>
-      </View>
-
-      <View style={styles.filterContainer}>
-        <TouchableOpacity style={[styles.filterButton, styles.activeFilter]}>
-          <Text style={[styles.filterText, styles.activeFilterText]}>All</Text>
-        </TouchableOpacity>
-      </View>
-
-      <FlatList
-        data={templates}
-        keyExtractor={(_, index) => `template-${index}`}
-        numColumns={2}
-        contentContainerStyle={styles.grid}
-        renderItem={({ item, index }) => (
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() => handleTemplateSelect(index)}
-          >
-            <Image source={require('../../../assets/images/template.png')} style={styles.cardImage} />
-            <TouchableOpacity style={styles.favoriteButton}>
-              <Ionicons name="heart-outline" size={20} color="#333" />
-            </TouchableOpacity>
-            <Text style={styles.cardTitle}>Template {index + 1}</Text>
+    <LinearGradient colors={["#A07BB7", "#F6F2F7"]} style={styles.gradient}>
+      <View style={styles.container}>
+        <View style={styles.headerBar}>
+          <Text style={styles.headerTitle}>TEMPLATES</Text>
+        </View>
+        <View style={styles.headerWrap}>
+          <Text style={styles.headerSubtitle}>Discover amazing design templates for your next project</Text>
+        </View>
+        <View style={styles.filterContainer}>
+          <TouchableOpacity style={[styles.filterButton, styles.activeFilter]}>
+            <Text style={[styles.filterText, styles.activeFilterText]}>All</Text>
           </TouchableOpacity>
-        )}
-      />
-    </View>
+        </View>
+        <FlatList
+          data={templates}
+          keyExtractor={(_, index) => `template-${index}`}
+          numColumns={2}
+          contentContainerStyle={styles.grid}
+          renderItem={({ item, index }) => (
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() => handleTemplateSelect(index)}
+            >
+              <Image source={require('../../../assets/images/template.png')} style={styles.cardImage} />
+              <TouchableOpacity style={styles.favoriteButton}>
+                <Ionicons name="heart-outline" size={20} color="#333" />
+              </TouchableOpacity>
+              <Text style={styles.cardTitle}>Template {index + 1}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
     paddingHorizontal: 16,
-    paddingTop: 24,
+    paddingTop: 0,
+  },
+  headerBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingHorizontal: 16,
+    paddingTop: Platform.OS === 'ios' ? 72 : 48,
+    paddingBottom: 12,
+    backgroundColor: '#A07BB7',
+    marginHorizontal: -16,
+    marginTop: 0,
+    marginBottom: 10,
+  },
+  headerTitle: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#fff',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   headerWrap: {
     marginTop: 12,
     marginBottom: 12,
     alignItems: 'center',
   },
-  headerTitle: {
+  headerTitle2: {
     fontSize: 32,
     fontWeight: 'bold',
     textAlign: 'center',

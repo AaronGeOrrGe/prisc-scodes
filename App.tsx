@@ -1,5 +1,10 @@
 import { ExpoRoot } from 'expo-router';
+import { ThemeProvider } from './app/components/ThemeProvider';
 
 export default function App() {
-  return <ExpoRoot context={require.context('./app')} />;
+  return (
+    <ThemeProvider>
+      <ExpoRoot context={require.context('./app')} />
+    </ThemeProvider>
+  );
 } 

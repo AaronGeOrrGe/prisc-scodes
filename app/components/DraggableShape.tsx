@@ -11,6 +11,7 @@ import { useCanvas } from '../../context/CanvasContext';
 import { ShapeType } from '../../constants/type';
 import { Ionicons } from '@expo/vector-icons';
 import { generateUUID } from '@/utils/generateUUID';
+import Svg, { Polygon } from 'react-native-svg';
 
 const HANDLE_SIZE = 20;
 const MIN_SIZE = 40;
@@ -61,7 +62,9 @@ const DraggableShape: React.FC<DraggableShapeProps> = ({ shape, onLongPress, set
   const resizeHeight = useSharedValue(shape.style.height || 100);
 
   const baseStyle: ViewStyle = {
-    backgroundColor: shape.style?.backgroundColor || '#ccc',
+    backgroundColor: (shape.type === 'rectangle' || shape.type === 'circle' || shape.type === 'oval' || shape.type === 'diamond')
+      ? (shape.style?.backgroundColor || '#ccc')
+      : 'transparent',
     borderRadius: shape.type === 'circle' || shape.type === 'oval' ? 999 : (shape.style?.borderRadius || 0),
   };
 
@@ -223,7 +226,7 @@ const DraggableShape: React.FC<DraggableShapeProps> = ({ shape, onLongPress, set
             animationType="fade"
             onRequestClose={() => setEditTextModal(false)}
           >
-            <View style={[styles.modalOverlay, { flex: 1, justifyContent: 'center', alignItems: 'center', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }]}>
+            <View style={styles.modalOverlay}>
               <View style={styles.modalContent}>
                 <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Edit Text</Text>
                 {/* Formatting Toolbar */}
@@ -282,7 +285,7 @@ const DraggableShape: React.FC<DraggableShapeProps> = ({ shape, onLongPress, set
             animationType="fade"
             onRequestClose={() => setColorModal(false)}
           >
-            <View style={[styles.modalOverlay, { flex: 1, justifyContent: 'center', alignItems: 'center', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }]}>
+            <View style={styles.modalOverlay}>
               <View style={styles.modalContent}>
                 <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Pick a Color</Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -328,15 +331,43 @@ const DraggableShape: React.FC<DraggableShapeProps> = ({ shape, onLongPress, set
                 {(shape.type === 'rectangle' || shape.type === 'circle' || shape.type === 'text' || shape.type === 'oval' || shape.type === 'diamond') && shape.text && (
                   <Animated.Text style={[styles.shapeText, animatedTextStyle]}>{shape.text}</Animated.Text>
                 )}
-                {/* Kite shape: render as a diamond (rotated square) */}
+                {/* Kite shape: render as a diamond using SVG */}
                 {shape.type === 'kite' && (
-                  <View style={{
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: shape.style?.backgroundColor || '#3498db',
-                    transform: [{ rotate: '45deg' }],
-                    borderRadius: 8,
-                  }} />
+                  <>
+                    <Svg width="100%" height="100%" viewBox="0 0 100 100" style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }}>
+                      <Polygon
+                        points="50,0 100,50 50,100 0,50"
+                        fill={shape.style?.backgroundColor || '#3498db'}
+                        stroke="#34495e"
+                        strokeWidth={2}
+                      />
+                    </Svg>
+                    {shape.text && (
+                      <Animated.Text
+                        style={[
+                          {
+                            position: 'absolute',
+                            left: 0,
+                            top: 0,
+                            width: '100%',
+                            height: '100%',
+                            textAlign: 'center',
+                            textAlignVertical: 'center',
+                            includeFontPadding: false,
+                            color: shape.style?.color || '#333',
+                            fontWeight: bold ? 'bold' : 'normal',
+                            fontStyle: italic ? 'italic' : 'normal',
+                            textDecorationLine: underline ? 'underline' : 'none',
+                          },
+                          animatedTextStyle,
+                        ]}
+                        numberOfLines={2}
+                        adjustsFontSizeToFit
+                      >
+                        {shape.text}
+                      </Animated.Text>
+                    )}
+                  </>
                 )}
                 {/* Arrow shape: render as a right-pointing arrow */}
                 {shape.type === 'arrow' && (
@@ -370,7 +401,16 @@ const DraggableShape: React.FC<DraggableShapeProps> = ({ shape, onLongPress, set
             <Animated.View style={toolbarStyle}>
               {isSelected && !shape.isLocked && (
                 <>
-                  <TouchableOpacity style={styles.toolbarBtn} onPress={() => setEditTextModal(true)}>
+                  <TouchableOpacity
+                    style={styles.toolbarBtn}
+                    onPress={() => {
+                      if (!isSelected) {
+                        setSelectedShapeId(shape.id);
+                        setTimeout(() => setEditTextModal(true), 0);
+                      } else {
+                        setEditTextModal(true);
+                      }
+                    }}>
                     <Ionicons name="pencil" size={20} color="#333" />
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.toolbarBtn} onPress={() => setColorModal(true)}>
@@ -484,7 +524,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modalOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    flex: 1,
     backgroundColor: 'rgba(0,0,0,0.3)',
     justifyContent: 'center',
     alignItems: 'center',

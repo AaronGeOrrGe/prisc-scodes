@@ -1,6 +1,6 @@
 // app/signup.tsx
 import React, { useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Image, SafeAreaView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Image, SafeAreaView, Platform, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import COLORS from '../../constants/Colors';
@@ -19,6 +19,7 @@ export default function SignupScreen() {
   const [loading, setLoading] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
   const [fontsLoaded] = useFonts({
     'JetBrainsMono-Medium': require('../../assets/fonts/fonts/ttf/JetBrainsMono-Medium.ttf'),
   });
@@ -67,15 +68,32 @@ export default function SignupScreen() {
       return;
     }
     setLoading(true);
+    // --- MOCK SIGNUP LOGIC: Remove this block and uncomment the fetch below to reconnect to backend ---
+    setTimeout(() => {
+      setLoading(false);
+      // Simulate success: redirect to verify code screen
+      router.replace({ pathname: '/(auth)/verify-code', params: { email } });
+      // To simulate an error, uncomment below:
+      // setError('Signup failed.');
+    }, 1000);
+    /*
     try {
-      // Simulate a successful signup
-      setTimeout(() => {
-        router.replace('/(drawer)/(tabs)/mirror');
-      }, 1000);
+      const res = await fetch('http://localhost:8081/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }),
+      });
+      if (res.ok) {
+        router.replace('/(auth)/verify-code?email=' + encodeURIComponent(email));
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setError(data.message || 'Signup failed.');
+      }
     } catch (err) {
       setError('Network error. Please check your connection.');
-      setLoading(false);
     }
+    setLoading(false);
+    */
   };
 
   return (
@@ -168,7 +186,7 @@ export default function SignupScreen() {
                   <Text style={styles.socialButtonText}>Continue with Google</Text>
                 </TouchableOpacity>
                 {/* Switch to login */}
-                <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
+                <TouchableOpacity onPress={() => router.push({ pathname: '/(auth)/login' })}>
                   <Text style={styles.switchText}>
                     Already have an account? <Text style={styles.link}>Log in</Text>
                   </Text>
